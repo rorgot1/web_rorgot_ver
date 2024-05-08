@@ -32,7 +32,6 @@ const initDB = async () => {
         database: process.env.MYSQL_NAME
     })
 }
-
 // controller
 app.post('/api/login', loginController)
 //app.get('/api/get/typeRepair', authMiddleware, typeRepairController)
