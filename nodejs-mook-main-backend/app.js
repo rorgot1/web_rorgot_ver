@@ -10,6 +10,8 @@ const authMiddleware = require('./middlewares/authMiddleware')
 const loginController = require('./controllers/loginController')
 const typeRepairController = require('./controllers/typeRepairController')
 const resourceShowController = require('./controllers/resourceShowController')
+const IT_RepairController = require('./controllers/IT_RepairController')
+
 
 const corsOptions = {
     origin: 'http://localhost:3000',
@@ -22,7 +24,7 @@ app.use(express.json())
 app.use(cors(corsOptions));
 
 global.conn = null
-
+global.num1 = 1
 // init db
 const initDB = async () => {
     conn = await mysql.createConnection({
@@ -37,6 +39,7 @@ app.post('/api/login', loginController)
 //app.get('/api/get/typeRepair', authMiddleware, typeRepairController)
 app.get('/api/get/typeRepair', typeRepairController)
 app.post('/api/get/resource', resourceShowController)
+app.post('/api/IT_Repair_data', IT_RepairController)
 
 // main
 app.listen(process.env.PORT, async () => {

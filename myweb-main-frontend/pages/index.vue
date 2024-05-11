@@ -44,13 +44,13 @@
 const user = ref()
 const password = ref()
 const reason = ref()
-
+const EN = ref()
 const login = async () => {
-  const res = await $fetch('http://localhost:5200/api/login', {
+  const res = await $fetch('http://localhost:5600/api/login', {
     method: "POST",
     body: {
       user: user.value,
-      password: password.value
+      password: password.value,
     },
     credentials: 'include'
   }).then((respond) => navigateTo('/home')).catch((error) => reason.value = error.data.message)

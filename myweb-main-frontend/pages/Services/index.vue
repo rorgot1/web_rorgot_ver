@@ -41,8 +41,8 @@
         <!-- Select Issue -->
         <div class="mb-4" v-if="ty2.length > 0">
           <label for="selectIssue" class="block mb-2">เลือกหัวข้อ</label>
-          <select name="issue" id="selectIssue" class="form-select" v-model="selectedIssue"
-            @change="console.log(selectedIssue)" required>
+          <select name="issue" id="selectIssue" class="form-select" v-model="selectedIssue" required>
+
             <!-- <option value="" disabled hidden selected>{{ selectedIssue ? selectedIssue : 'Please select item' }}</option>-->
             <option v-for="j in ty2" :key="j.id">{{ j.name }}</option>
           </select>
@@ -54,8 +54,6 @@
           <textarea id="explanation" class="h-32 w-full border rounded-lg px-4" rows="3" v-model="reason"
             required></textarea>
         </div>
-
-
       </form>
       <!-- Buttons -->
       <div class="flex items-center justify-center space-x-2 flex-grow">
@@ -79,22 +77,21 @@ const selectedTopic = ref();
 const selectedIssue = ref();
 const reason = ref();
 import { jwtDecode } from "jwt-decode";
-
 const token = jwtDecode(useCookie("token").value) //nuxt cookie & jwtDecode nuxt
 
 const fetchData = async () => {
   try {
-    const response = await $fetch('http://localhost:5200/api/get/typeRepair', { credentials: 'include' });
+    const response = await $fetch('http://localhost:5600/api/get/typeRepair', { credentials: 'include' });
     ty1.value = response.results;
   } catch (error) {
     console.error('Failed to fetch ty1 data:', error);
   }
 };
-
+//
 const loadIssues = async () => {
   try {
     if (selectedTopic.value) {
-      const response = await $fetch('http://localhost:5200/api/get/resource', {
+      const response = await $fetch('http://localhost:5600/api/get/resource', {
         method: "POST",
         body: {
           type: selectedTopic.value,
@@ -107,16 +104,31 @@ const loadIssues = async () => {
     console.error('Failed to fetch ty2 data:', error);
   }
 };
-
+//{en, name, section_id, tel, type, resource, detail}
 const save_button = async () => {
   try {
+      const response = await $fetch('http://localhost:5600/api/IT_Repair_data', {
+        method: "POST",
+        body: {
+          en: token.userId,
+          name: token.name,
+          section_id: token.department,
+          tel: token.tel,
+          type: selectedTopic.value,
+          resource: selectedIssue.value,
+          detail: reason.value
+        },credentials: 'include'      
+      });
+    /*console.log(token.userId)
+    console.log(token.name);
+    console.log(token.department);
+    console.log(token.tel);
     console.log(selectedTopic.value);
     console.log(selectedIssue.value);
-    console.log(reason.value);
-    console.log(token.name)
+    console.log(reason.value);*/
 
   } catch (error) {
-    console.error('Failed to go finish page:', error);
+    console.error('Failed to save data:', error);
   }
 
 }
