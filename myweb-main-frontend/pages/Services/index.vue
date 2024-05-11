@@ -69,8 +69,6 @@
 </template>
 
 <script setup>
-
-
 const ty1 = ref([]);
 const ty2 = ref([]);
 const selectedTopic = ref();
@@ -134,6 +132,8 @@ const save_button = async () => {
 }
 
 fetchData();
+
+
 </script>
 
 
