@@ -74,7 +74,9 @@
   const selectedTopic = ref();
   const selectedIssue = ref();
   const reason = ref();
-
+  import { jwtDecode } from "jwt-decode";
+  const token = jwtDecode(useCookie("token").value) //nuxt cookie & jwtDecode nuxt
+  
   const fetchData = async () => {
     try {
       const response = await $fetch('http://localhost:5100/api/get/typeRepair', { credentials: 'include' });
@@ -105,7 +107,7 @@
       console.log(selectedTopic.value);
       console.log(selectedIssue.value);
       console.log(reason.value);      
-      console.log()
+      console.log(token.name)
 
     }catch (error){
       console.error('Failed to go finish page:', error);
