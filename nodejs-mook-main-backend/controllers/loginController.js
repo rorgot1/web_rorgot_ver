@@ -5,8 +5,8 @@ module.exports = async (req, res) => {
     try {
         const { user, password } = req.body
 
-        const [results] = await conn.query('select * from employee where User = ?', String(user))
-
+        const [results] = await conn.query('select * from employee where user = ?', String(user))
+        //result คือ เก็บค่าผลการค้นหาจาก Database
         if (!results[0]) {
             res.status(401).json({
                 message: "ไม่พบผู้ใช้"
@@ -26,8 +26,12 @@ module.exports = async (req, res) => {
 
         // sign jwt
         const token = jwt.sign({
-            userId: userData.EN,
-            name: userData.name + ' ' + userData.last_name
+            userId: userData.en,
+            name: userData.name + ' ' + userData.last_name,
+            email: userData.e_mail,
+            department: userData.department_id,
+            tel: userData.tel
+        
         }, process.env.SECRET, { expiresIn: '1h' })
 
         res.cookie('token', token)

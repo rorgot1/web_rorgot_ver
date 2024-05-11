@@ -31,91 +31,109 @@
       <form class="mx-auto max-w-lg">
         <div class="mb-4">
           <label for="selectTopic" class="block mb-2">เลือกเรื่อง</label>
-          <select name="topic" id="selectTopic" class="form-select" v-model="selectedTopic" @change="loadIssues" required>
-           <!-- <option value="" disabled hidden selected>{{ selectedTopic ? selectedTopic : 'Please select item' }}</option>-->
+          <select name="topic" id="selectTopic" class="form-select" v-model="selectedTopic" @change="loadIssues"
+            required>
+            <!-- <option value="" disabled hidden selected>{{ selectedTopic ? selectedTopic : 'Please select item' }}</option>-->
             <option v-for="i in ty1" :key="i.id" :value="i.name">{{ i.name }}</option>
           </select>
         </div>
 
         <!-- Select Issue -->
-        <div class="mb-4" v-if="ty2.length > 0"> 
+        <div class="mb-4" v-if="ty2.length > 0">
           <label for="selectIssue" class="block mb-2">เลือกหัวข้อ</label>
-          <select name="issue" id="selectIssue" class="form-select" v-model="selectedIssue" @change="console.log(selectedIssue)" required>
-           <!-- <option value="" disabled hidden selected>{{ selectedIssue ? selectedIssue : 'Please select item' }}</option>-->
+          <select name="issue" id="selectIssue" class="form-select" v-model="selectedIssue" required>
+
+            <!-- <option value="" disabled hidden selected>{{ selectedIssue ? selectedIssue : 'Please select item' }}</option>-->
             <option v-for="j in ty2" :key="j.id">{{ j.name }}</option>
           </select>
         </div>
 
         <!-- Explanation -->
         <div class="mb-4">
-          <label  for="explanation" class="block mb-2">Description</label>
-          <textarea id="explanation" class="h-32 w-full border rounded-lg px-4" rows="3" v-model="reason" required></textarea>
+          <label for="explanation" class="block mb-2">Description</label>
+          <textarea id="explanation" class="h-32 w-full border rounded-lg px-4" rows="3" v-model="reason"
+            required></textarea>
         </div>
+      </form>
+      <!-- Buttons -->
+      <div class="flex items-center justify-center space-x-2 flex-grow">
 
-        <!-- Buttons -->
-        <div class="flex items-center justify-center space-x-2 flex-grow">
-
-          <button @click="save_button" class="rounded-full bg-green-500 text-white px-4 py-2">Save</button>
+        <button @click="save_button" class="rounded-full bg-green-500 text-white px-4 py-2">Save</button>
 
         <router-link to="/home/">
           <button class="rounded-full bg-red-600 text-white px-4 py-2">Cancel</button>
         </router-link>
-        </div>
-      </form>
+      </div>
     </main>
   </div>
 </template>
 
 <script setup>
+const ty1 = ref([]);
+const ty2 = ref([]);
+const selectedTopic = ref();
+const selectedIssue = ref();
+const reason = ref();
+import { jwtDecode } from "jwt-decode";
+const token = jwtDecode(useCookie("token").value) //nuxt cookie & jwtDecode nuxt
 
-
-  const ty1 = ref([]);
-  const ty2 = ref([]); 
-  const selectedTopic = ref();
-  const selectedIssue = ref();
-  const reason = ref();
-  import { jwtDecode } from "jwt-decode";
-  const token = jwtDecode(useCookie("token").value) //nuxt cookie & jwtDecode nuxt
-  
-  const fetchData = async () => {
-    try {
-      const response = await $fetch('http://localhost:5100/api/get/typeRepair', { credentials: 'include' });
-      ty1.value = response.results;
-    } catch (error) {
-      console.error('Failed to fetch ty1 data:', error);
+const fetchData = async () => {
+  try {
+    const response = await $fetch('http://localhost:5600/api/get/typeRepair', { credentials: 'include' });
+    ty1.value = response.results;
+  } catch (error) {
+    console.error('Failed to fetch ty1 data:', error);
+  }
+};
+//
+const loadIssues = async () => {
+  try {
+    if (selectedTopic.value) {
+      const response = await $fetch('http://localhost:5600/api/get/resource', {
+        method: "POST",
+        body: {
+          type: selectedTopic.value,
+        },
+        credentials: 'include'
+      });
+      ty2.value = response.results;
     }
-  };
+  } catch (error) {
+    console.error('Failed to fetch ty2 data:', error);
+  }
+};
+//{en, name, section_id, tel, type, resource, detail}
+const save_button = async () => {
+  try {
+      const response = await $fetch('http://localhost:5600/api/IT_Repair_data', {
+        method: "POST",
+        body: {
+          en: token.userId,
+          name: token.name,
+          section_id: token.department,
+          tel: token.tel,
+          type: selectedTopic.value,
+          resource: selectedIssue.value,
+          detail: reason.value
+        },credentials: 'include'      
+      });
+    /*console.log(token.userId)
+    console.log(token.name);
+    console.log(token.department);
+    console.log(token.tel);
+    console.log(selectedTopic.value);
+    console.log(selectedIssue.value);
+    console.log(reason.value);*/
 
-  const loadIssues = async () => {
-    try {
-      if (selectedTopic.value) {
-        const response = await $fetch('http://localhost:5100/api/get/resource', { 
-          method : "POST",
-          body:{
-            type : selectedTopic.value,
-          },
-          credentials: 'include' });
-          ty2.value = response.results;
-      }
-    } catch (error) {
-      console.error('Failed to fetch ty2 data:', error);
-    }
-  };
+  } catch (error) {
+    console.error('Failed to save data:', error);
+  }
 
-  const save_button = async () => {
-    try{
-      console.log(selectedTopic.value);
-      console.log(selectedIssue.value);
-      console.log(reason.value);      
-      console.log(token.name)
+}
 
-    }catch (error){
-      console.error('Failed to go finish page:', error);
-    }
+fetchData();
 
-  } 
 
-  fetchData();
 </script>
 
 

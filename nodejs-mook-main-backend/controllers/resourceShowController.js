@@ -1,6 +1,6 @@
 module.exports = async (req, res) => {
     const {type} = req.body
-    console.log(type)
+    //console.log(type)
     try {
         const [results] = await conn.query('SELECT resource.name FROM resource JOIN type ON resource.type = type.id WHERE type.name = ?', String(type))
         

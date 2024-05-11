@@ -13,9 +13,11 @@
               Shuttle booking
             </button>
           </a>
+          <router-link to="/Notification/">
           <button class="rounded-full bg-gray-200 text-gray-800 px-4 py-2">
             Notification
           </button>
+        </router-link>
           <router-link to="/">
             <button class="rounded-full bg-green-500 text-white px-4 py-2">
               Logout
