@@ -6,13 +6,13 @@
           <th style="width: 7.5%;">Job No.</th>
           <th style="width: 2%;">EN</th>
           <th style="width: 15%;">Requester</th>
-          <th style="width: 5%;">Section</th>
+          <th style="width: 3%;">Section</th>
           <th style="width: 5%;">Tel.</th>
-          <th style="width: 12%;">Create date</th>
-          <th style="width: 10%;">Type</th>
-          <th style="width: 12%;">Device</th>
-          <th style="width: 18%;">Detail</th>
-          <th style="width: 12%;">Status</th>
+          <th style="width: 11.5%;">Create date</th>
+          <th style="width: 9.2%;">Type</th>
+          <th style="width: 11.3%;">Device</th>
+          <th style="width: 15%;">Detail</th>
+          <th style="width: 15%;">Status</th>
           <th style="width: 10%;">Export</th>
         </tr>
       </thead>
@@ -26,10 +26,11 @@
           <td>{{ item.create_date }}</td>
           <td>{{ item.type }}</td>
           <td>{{ item.resource }}</td>
-          <td>
+          <td> 
+            <!--Pop up-->
             <div>
               <span v-if="isTextTruncated(item.reason)">
-                {{ truncateText(item.reason, 25) }}
+                {{ truncateText(item.reason, 18.5) }}
                 <span class="more-link" @click="showFullText(item.reason)">more</span>
               </span>
               <span v-else>
@@ -43,10 +44,12 @@
                 }}</span>
               <div v-else class="custom-dropdown">
                 <select v-model="item.updatedStatus" class="dropdown-menu">
-                  <option value="wait" :style="{ color: 'rgb(0, 0, 0)' }">Wait</option>
-                  <option value="true" :style="{ color: 'rgb(0, 128, 0)' }">True</option>
-                  <option value="false" :style="{ color: 'rgb(255, 0, 0)' }">False</option>
+                  <option value="Wait" :style="{ color: 'black' }">Wait</option>
+                  <option value="Open" :style="{ color: 'green' }">Open</option>
+                  <option value="Close" :style="{ color: 'red' }">Close</option>
+                  <option value="In Process" :style="{ color: 'orange' }">In Process</option>
                 </select>
+
                 <div class="dropdown-arrow"></div>
               </div>
               <button @click="editStatus(index)" class="edit-button">Edit</button>
@@ -58,6 +61,10 @@
           </td>
           <td>
             <!-- Placeholder for Export button -->
+            <div style="text-align: center;">
+              <button onclick="" class="pdf-button" style="text-decoration: underline; font-size: 14px;">PDF</button>
+            </div>
+
           </td>
         </tr>
       </tbody>
@@ -76,9 +83,13 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 const meme = ref([]);
+const State = ref();
+const item = ref();
 
 const test_data = async () => {
+
   try {
     const response = await fetch('http://localhost:5600/api/IT_Repair_data_table', {
       method: "POST",
@@ -92,6 +103,23 @@ const test_data = async () => {
 };
 test_data();
 
+const status_update = async (index) => {
+  try {
+    const response = await $fetch('http://localhost:5600/api/IT_Repair_status_choice', {
+      method: "POST",
+      body: {
+        data: meme.value[index].status,
+        job_no: meme.value[index].job_no
+      }, credentials: 'include'
+    })
+    State.value = response.results
+    console.log(State.value)
+
+  } catch (error) {
+    console.error('Failed to fetch test_api data:', error);
+  }
+}
+//editStatus(index)
 const truncateText = (text, maxLength) => {
   if (text && text.length > maxLength) {
     return text.slice(0, maxLength) + '...';
@@ -117,29 +145,35 @@ const closeModal = () => {
 
 const getStatusColor = (status) => {
   switch (status) {
-    case 'wait':
+    case 'Wait':
       return 'black';
-    case 'true':
+    case 'Open':
       return 'green';
-    case 'false':
+    case 'Close':
       return 'red';
+    case 'In Process':
+      return 'orange';
     default:
       return 'black';
   }
 };
 
-const editStatus = (index) => {
-  items.value[index].editing = index;
-  items.value[index].updatedStatus = items.value[index].status;
-};
 
+
+const editStatus = (index) => {
+  meme.value[index].editing = index;
+  meme.value[index].updatedStatus = meme.value[index].status;
+};
 const cancelEdit = (index) => {
-  items.value[index].editing = -1;
+  meme.value[index].editing = -1; // Corrected to meme.value[index]
 };
 
 const applyEdit = (index) => {
-  items.value[index].status = items.value[index].updatedStatus;
-  items.value[index].editing = -1;
+
+  meme.value[index].status = meme.value[index].updatedStatus;
+  meme.value[index].editing = -1;
+  status_update(index);
+
 };
 </script>
 
@@ -163,7 +197,7 @@ const applyEdit = (index) => {
 .edit-button {
   position: absolute;
   top: 50%;
-  right: 0%;
+  right: -3%;
   transform: translateY(-50%);
   padding: 6px 10px;
   cursor: pointer;
@@ -180,7 +214,7 @@ const applyEdit = (index) => {
 .action-buttons {
   position: absolute;
   top: 50%;
-  right: 0%;
+  right: -3%;
   transform: translateY(-50%);
 }
 
@@ -216,7 +250,7 @@ const applyEdit = (index) => {
   border-radius: 4px;
   background-color: #fff;
   color: #333;
-  width: 120%;
+  width: 70%;
   /* Adjust the initial width */
   max-width: 150px;
   /* Set a maximum width for responsiveness */
@@ -225,7 +259,7 @@ const applyEdit = (index) => {
 .dropdown-arrow {
   position: absolute;
   top: 50%;
-  right: -15%;
+  right: 32%;
   /* Adjust the right distance */
   transform: translateY(-50%);
   width: 0;
@@ -245,7 +279,7 @@ const applyEdit = (index) => {
   color: darkblue;
 }
 
-/* Modal Styles */
+/* Modal Styles Pop up */
 .modal {
   display: block;
   position: fixed;
@@ -254,8 +288,10 @@ const applyEdit = (index) => {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  overflow: auto; /* Enable scrolling if content exceeds modal height */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent background */
+  overflow: auto;
+  /* Enable scrolling if content exceeds modal height */
 }
 
 .modal-content {
@@ -266,10 +302,14 @@ const applyEdit = (index) => {
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  max-width: 80%; /* Adjusted maximum width for modal content */
-  width: calc(100% - 40px); /* Calculate width to leave space for padding */
-  max-height: 80%; /* Set maximum height for modal content */
-  overflow: auto; /* Enable scrolling within modal content */
+  max-width: 80%;
+  /* Adjusted maximum width for modal content */
+  width: calc(100% - 40px);
+  /* Calculate width to leave space for padding */
+  max-height: 80%;
+  /* Set maximum height for modal content */
+  overflow-y: auto;
+  /* Enable vertical scrolling within modal content */
 }
 
 .close {
@@ -281,7 +321,9 @@ const applyEdit = (index) => {
 }
 
 .full-text {
-  white-space: pre-wrap; /* Preserve line breaks and wrap long lines */
-  overflow-wrap: break-word; /* Allow long words to wrap within the modal */
+  white-space: pre-wrap;
+  /* Preserve line breaks and wrap long lines */
+  overflow-wrap: break-word;
+  /* Allow long words to wrap within the modal */
 }
 </style>

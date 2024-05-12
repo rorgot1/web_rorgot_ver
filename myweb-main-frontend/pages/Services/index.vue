@@ -42,7 +42,6 @@
         <div class="mb-4" v-if="ty2.length > 0">
           <label for="selectIssue" class="block mb-2">เลือกหัวข้อ</label>
           <select name="issue" id="selectIssue" class="form-select" v-model="selectedIssue" required>
-
             <!-- <option value="" disabled hidden selected>{{ selectedIssue ? selectedIssue : 'Please select item' }}</option>-->
             <option v-for="j in ty2" :key="j.id">{{ j.name }}</option>
           </select>
@@ -81,7 +80,7 @@ const fetchData = async () => {
     const response = await $fetch('http://localhost:5600/api/get/typeRepair', { credentials: 'include' });
     ty1.value = response.results;
   } catch (error) {
-    console.error('Failed to fetch ty1 data:', error);
+    console.error('Failed to fetch Topic type data:', error);
   }
 };
 //
@@ -113,7 +112,8 @@ const save_button = async () => {
           tel: token.tel,
           type: selectedTopic.value,
           resource: selectedIssue.value,
-          detail: reason.value
+          detail: reason.value,
+          status : "Wait"
         },credentials: 'include'      
       });
       //console.log(token.role)

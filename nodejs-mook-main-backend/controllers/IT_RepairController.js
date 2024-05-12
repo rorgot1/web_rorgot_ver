@@ -17,7 +17,7 @@ function formatDateTime(date) {
 }
 
 module.exports = async (req, res) =>{
-    try{const {en, name, section_id, tel, type, resource, detail} =req.body
+    try{const {en, name, section_id, tel, type, resource, detail, status} =req.body
         const [section_result] = await conn.query('SELECT department.name from department where id = ?', String(section_id))
         const section = section_result[0]
 
@@ -45,8 +45,8 @@ module.exports = async (req, res) =>{
 
         //Insert data to database
         conn.query(
-            "INSERT INTO it_repair_data(job_no, en,	requester, department, tel, create_date, type, resource, reason) VALUES(?, ?, ?, ?, ?, ?, ?, ?,	?) ", 
-            [job_no, en, name, section.name, tel, date, type, resource, detail],
+            "INSERT INTO it_repair_data(job_no, en,	requester, department, tel, create_date, type, resource, reason, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?,	?, ?) ", 
+            [job_no, en, name, section.name, tel, date, type, resource, detail, status],
         )
 
     } catch (error){

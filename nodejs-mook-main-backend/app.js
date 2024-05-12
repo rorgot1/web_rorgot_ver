@@ -12,6 +12,8 @@ const typeRepairController = require('./controllers/typeRepairController')
 const resourceShowController = require('./controllers/resourceShowController')
 const IT_RepairController = require('./controllers/IT_RepairController')
 const IT_Repair_TableController = require('./controllers/IT_Repair_TableController')
+const IT_Repair_statusController = require('./controllers/IT_Repair_statusController')
+
 
 const corsOptions = {
     origin: 'http://localhost:3000',
@@ -41,6 +43,8 @@ app.get('/api/get/typeRepair', typeRepairController)
 app.post('/api/get/resource', resourceShowController)
 app.post('/api/IT_Repair_data', IT_RepairController)
 app.post('/api/IT_Repair_data_table', IT_Repair_TableController)
+app.post('/api/IT_Repair_status_choice', IT_Repair_statusController)
+
 
 // main
 app.listen(process.env.PORT, async () => {
